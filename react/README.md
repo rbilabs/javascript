@@ -735,6 +735,40 @@ We don’t recommend using indexes for keys if the order of items may change.
   > Why? [`isMounted` is an anti-pattern][anti-pattern], is not available when using ES6 classes, and is on its way to being officially deprecated.
 
   [anti-pattern]: https://facebook.github.io/react/blog/2015/12/16/ismounted-antipattern.html
+  
+## LaunchDarkly
+```jsx
+// bad
+const RecentItems: FC<{ locationName: string }> = ({ locationName }) => {
+  const enableRecentItems = useFlag(
+    LaunchDarklyFlag.ENABLE_RECENT_ITEMS
+  );
+  const { data: userData, loading, refetch, called } = useGetMeQuery({
+    variables: {
+      numUniquePurchasedItems: 5,
+    },
+  });
+  useEffect(() => {
+   // Do something silly...
+  }, [])
+  
+  return (
+    {enableRecentItems && <RecentOrderCardCarousel />}
+  );
+}
+  
+//good
+const RecentItems: FC<{ locationName: string }> = ({ locationName }) => {
+  const enableRecentItem = useFlag(LaunchDarklyFlag.ENABLE_RECENT_ITEM);
+  
+  if (!enableRecentItem) {
+    return null;
+  }
+  
+  return (
+    <RecentOrderCardCarousel />
+  );
+```
 
 ## Translation
 
